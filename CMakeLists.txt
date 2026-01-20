@@ -28,8 +28,6 @@ endif()
 # Initialize the SDK
 pico_sdk_init()
 
-include(example_auto_set_url.cmake)
-
 function(add_subdirectory_exclude_platforms NAME)
     if (ARGN)
         if (PICO_PLATFORM IN_LIST ARGN)
@@ -58,4 +56,4 @@ if (CMAKE_C_COMPILER_ID STREQUAL "GNU")
 endif()
 
 # Hardware-specific examples in subdirectories:
-add_subdirectory(trustzone)
+add_subdirectory_exclude_platforms(two_worlds rp2040 rp2350-riscv)
