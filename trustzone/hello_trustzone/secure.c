@@ -3,16 +3,14 @@
 #include "pico/bootrom.h"
 #include "hardware/watchdog.h"
 #include "pico/secure.h"
-
+#include "arm_cmse.h"
 #include "secure_call_user_callbacks.h"
 
 
 bool repeating_timer_callback(__unused struct repeating_timer *t) {
     watchdog_update();
-    printf("Secure repeat at %lld\n", time_us_64());
     return true;
 }
-
 
 void hardfault_callback(void) {
     if (m33_hw->dhcsr & M33_DHCSR_C_DEBUGEN_BITS) {
@@ -24,12 +22,8 @@ void hardfault_callback(void) {
     }
 }
 
-
 int secure_call_user_callback(uint32_t a, uint32_t b, uint32_t c, uint32_t d, uint32_t fn) {
     switch (fn) {
-        case SECURE_CALL_PRINT_VALUES:
-            printf("NS called secure_call with %d %d %d %d\n", a, b, c, d);
-            return BOOTROM_OK;
         case SECURE_CALL_RETURN_SECRET:
             uint32_t secret = 0x12345678;  // example secure value
             printf("Secure: returning secret\n");
@@ -38,7 +32,6 @@ int secure_call_user_callback(uint32_t a, uint32_t b, uint32_t c, uint32_t d, ui
             return BOOTROM_ERROR_INVALID_ARG;
     }
 }
-
 
 int main()
 {
@@ -58,7 +51,6 @@ int main()
     // Create user callback
     rom_secure_call_add_user_callback(secure_call_user_callback, SECURE_CALL_CALLBACKS_MASK);
 
-#if !PICO_SECURITY_SPLIT_NO_FLASH
     // Get boot partition
     boot_info_t info;
     rom_get_boot_info(&info);
@@ -69,7 +61,6 @@ int main()
     printf("Matching Non-Secure partition: %d\n", ns_partition);
     int rc = rom_roll_qmi_to_partition(ns_partition);
     printf("Rolled QMI to Non-Secure partition, rc=%d\n", rc);
-#endif
 
     // Configure SAU regions
     secure_sau_configure_split();
