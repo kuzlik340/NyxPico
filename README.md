@@ -25,6 +25,8 @@
 
 **NyxPico** is a project that implements encrypt and decrypt process for E2E communication on your own hardware, with your own rules.
 Current hardware is ``Raspberry Pi Pico 2`` that supports ARM Trustzone, secure boot and OTP memory.
+
+Main idea of project is to create a code with separation to secure world and non-secure world where all encrypt and decrypt operations would be possible only via gateway of secure world and where only non-secure world will use I/O.
 ## Installation
 TODO
 
