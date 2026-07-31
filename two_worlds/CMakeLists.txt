@@ -1,9 +1,18 @@
 # Add secure executable
-add_executable(secure secure.c)
+
+add_executable(secure secure.c
+    ${CMAKE_CURRENT_SOURCE_DIR}/../micro-ecc/uECC.c
+)
+
+target_include_directories(secure PRIVATE
+    ${CMAKE_CURRENT_SOURCE_DIR}/../micro-ecc
+)
+
 target_link_libraries(secure
-        pico_stdlib
-        hardware_watchdog
-        pico_secure
+    pico_stdlib
+    hardware_watchdog
+    pico_secure
+    pico_rand
 )
 
 # Packaged no_flash binary
