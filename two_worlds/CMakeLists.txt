@@ -6,6 +6,7 @@ add_executable(secure secure.c
 
 target_include_directories(secure PRIVATE
     ${CMAKE_CURRENT_SOURCE_DIR}/../micro-ecc
+    ${CMAKE_CURRENT_SOURCE_DIR} 
 )
 
 target_link_libraries(secure
@@ -13,6 +14,7 @@ target_link_libraries(secure
     hardware_watchdog
     pico_secure
     pico_rand
+    pico_mbedtls
 )
 
 # Packaged no_flash binary
