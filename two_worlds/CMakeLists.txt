@@ -26,6 +26,7 @@ pico_add_extra_outputs(secure)
 add_executable(nonsecure nonsecure.c)
 target_link_libraries(nonsecure
         pico_stdlib
+        hardware_i2c
 )
 
 # Set UF2 family manually

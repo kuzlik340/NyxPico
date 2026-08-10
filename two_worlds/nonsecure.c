@@ -5,6 +5,17 @@
 #include <string.h>
 #include "secure_call_user_callbacks.h"
 
+#define ANSI_RESET   "\033[0m"
+#define ANSI_BOLD    "\033[1m"
+
+#define ANSI_RED     "\033[31m"
+#define ANSI_GREEN   "\033[32m"
+#define ANSI_YELLOW  "\033[33m"
+#define ANSI_BLUE    "\033[34m"
+#define ANSI_CYAN    "\033[36m"
+#define ANSI_WHITE   "\033[37m"
+
+#define ANSI_BG_BLUE "\033[44m"
 
 static const char *logo = {
 "\n"
@@ -69,11 +80,11 @@ int main() {
     // Start stdio_usb
     stdio_usb_init();
     sleep_ms(3000);
-    printf("%s", logo);
+    printf(ANSI_GREEN "%s" ANSI_RESET, logo);
     // Obtain and display public key
     uint8_t public_key[64];
     int rc = rom_secure_call((uint32_t)public_key, 0, 0, 0, RETURN_PUBKEY);
-    if (rc == 0) {
+    if (!rc) {
         print_hex("Public key", public_key, sizeof(public_key));
     } else {
         print_error("RETURN_PUBKEY failed", rc);
@@ -95,7 +106,7 @@ int main() {
         } 
         else {
             int rc = rom_secure_call((uint32_t)peer_pubkey, 0, 0, 0, ECDH_COMPUTE);
-            if (rc == 0) {
+            if (!rc) {
                 printf("ECDH compute successful, you can start chatting");
                 break;
             }
@@ -120,16 +131,24 @@ int main() {
             uint8_t enc_bytes[250] = {0};
             size_t byte_length =  (strlen(line) - 4) / 2;
             parse_hex((line + 4), enc_bytes, byte_length);
-            print_hex("DBG: ", enc_bytes, byte_length);
             int rc = rom_secure_call((uint32_t)enc_bytes, byte_length, (uint32_t)out_buf, 0, DECRYPT_MESSAGE);
-            printf("DEC Message: %s and return code is %d", out_buf, rc);
+            if (!rc) {
+                printf("DEC Message: %s", out_buf, rc);
+            }
+            else {
+                print_error("DECRYPT_MESSAGE failed", rc);
+            }
         }
         else if(!strcmp(command, "ENC")){
             size_t len = strlen(line) - 4;
             printf("Plain text len = %d\n", len);
             int rc = rom_secure_call((uint32_t)(line + 4), strlen(line) - 4, (uint32_t)out_buf, 0, ENCRYPT_MESSAGE);
-            print_hex("ENC Message: ", (uint8_t *)out_buf, (strlen(line) - 4 + 12 + 16));
-            printf(" and return code is %d", rc);
+            if (!rc) {
+                print_hex("ENC Message", (uint8_t *)out_buf, (strlen(line) - 4 + 12 + 16));
+            }
+            else {
+                print_error("ENCRYPT_MESSAGE failed", rc);
+            }
         }
         else if(!strcmp(command, "EXI")){
             break;
