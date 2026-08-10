@@ -8,9 +8,10 @@
 #define MBEDTLS_SHA256_C
 #define MBEDTLS_HKDF_C
 
-// For the upcoming AES-GCM encrypt/decrypt step:
-#define MBEDTLS_CIPHER_C
-#define MBEDTLS_AES_C
-#define MBEDTLS_GCM_C
+// For the encrypt/decrypt procdures
+#define MBEDTLS_CHACHA20_C
+#define MBEDTLS_POLY1305_C
+#define MBEDTLS_CHACHAPOLY_C
 
+#define MBEDTLS_B
 #endif /* MBEDTLS_CONFIG_H */
