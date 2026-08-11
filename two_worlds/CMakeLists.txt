@@ -2,10 +2,12 @@
 
 add_executable(secure secure.c
     ${CMAKE_CURRENT_SOURCE_DIR}/../micro-ecc/uECC.c
+    ${CMAKE_CURRENT_SOURCE_DIR}/../pico-ssd1306/ssd1306.c
 )
 
 target_include_directories(secure PRIVATE
     ${CMAKE_CURRENT_SOURCE_DIR}/../micro-ecc
+    ${CMAKE_CURRENT_SOURCE_DIR}/../pico-ssd1306
     ${CMAKE_CURRENT_SOURCE_DIR} 
 )
 
@@ -15,6 +17,7 @@ target_link_libraries(secure
     pico_secure
     pico_rand
     pico_mbedtls
+    hardware_i2c
 )
 
 # Packaged no_flash binary
@@ -26,7 +29,6 @@ pico_add_extra_outputs(secure)
 add_executable(nonsecure nonsecure.c)
 target_link_libraries(nonsecure
         pico_stdlib
-        hardware_i2c
 )
 
 # Set UF2 family manually
